@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Realtix — Real Estate CRM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.10.0/dist/tabler-icons.min.css">
+<style>
+:root {
+  --navy:#0A0F1E; --navy2:#0F1629; --navy3:#162040;
+  --card:#1A2742; --card2:#1F3055;
+  --teal:#00C9A7; --teal2:#00E8C0; --teal-bg:rgba(0,201,167,.10); --teal-border:rgba(0,201,167,.22);
+  --white:#F0F4FF; --white2:#FFFFFF;
+  --muted:#7A8BAA; --muted2:#3D5278;
+  --border:rgba(255,255,255,.06); --border2:rgba(255,255,255,.11);
+  --red:#FF4D6A; --red-bg:rgba(255,77,106,.1);
+  --amber:#FFB020; --amber-bg:rgba(255,176,32,.1);
+  --green:#06D6A0; --green-bg:rgba(6,214,160,.1);
+  --blue:#4A90E2; --blue-bg:rgba(74,144,226,.1);
+  --purple:#9B72F8; --purple-bg:rgba(155,114,248,.1);
+  --sidebar-w:228px; --topbar-h:54px;
+  --r:8px; --r-sm:6px; --r-lg:14px;
+  --shadow:0 4px 24px rgba(0,0,0,.4);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;background:var(--navy)}
+body{font-family:'Inter',sans-serif;color:var(--white);font-size:13px;line-height:1.5}
+h1,h2,h3,h4{font-family:'Space Grotesk',sans-serif}
+button,input,select,textarea{font-family:'Inter',sans-serif}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--muted2);border-radius:4px}
+
+/* ── LAYOUT ── */
+.app{display:flex;height:100vh;overflow:hidden}
+
+/* ── SIDEBAR ── */
+.sidebar{width:var(--sidebar-w);min-width:var(--sidebar-w);background:var(--navy2);border-right:1px solid var(--border);display:flex;flex-direction:column;position:relative;overflow:hidden;z-index:10}
+.sidebar::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--teal),transparent)}
+.sb-logo{padding:16px 16px 13px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;cursor:pointer}
+.logo-icon{width:32px;height:32px;background:var(--teal);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:15px;color:var(--navy);flex-shrink:0;box-shadow:0 0 18px rgba(0,201,167,.3)}
+.logo-name{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:16px;letter-spacing:-.3px;color:var(--white2)}
+.logo-tag{font-size:9px;color:var(--teal);letter-spacing:.12em;text-transform:uppercase;font-weight:600}
+.sb-sec{padding:14px 14px 4px;font-size:9px;color:var(--muted2);letter-spacing:.12em;text-transform:uppercase;font-weight:700}
+.sb-item{display:flex;align-items:center;gap:9px;padding:8px 12px;margin:1px 8px;border-radius:var(--r-sm);cursor:pointer;font-size:12.5px;color:var(--muted);transition:all .15s;position:relative;user-select:none}
+.sb-item:hover{background:rgba(255,255,255,.04);color:var(--white)}
+.sb-item.active{background:var(--teal-bg);color:var(--teal);font-weight:500}
+.sb-item.active::before{content:'';position:absolute;left:-4px;top:25%;bottom:25%;width:2.5px;background:var(--teal);border-radius:0 3px 3px 0}
+.sb-item i{font-size:16px;flex-shrink:0}
+.sb-badge{margin-left:auto;font-size:9px;font-weight:700;padding:1px 6px;border-radius:10px;min-width:18px;text-align:center}
+.b-teal{background:var(--teal);color:var(--navy)}
+.b-red{background:var(--red);color:#fff}
+.sb-bottom{margin-top:auto;border-top:1px solid var(--border);padding:10px 12px}
+.sb-user{display:flex;align-items:center;gap:9px;padding:7px 4px;cursor:pointer;border-radius:var(--r-sm);transition:background .15s}
+.sb-user:hover{background:rgba(255,255,255,.04)}
+.user-av{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--teal),#4A90E2);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--navy);flex-shrink:0}
+.user-name{font-size:12px;font-weight:600;color:var(--white2)}
+.user-role{font-size:10px;color:var(--muted)}
+
+/* ── MAIN ── */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.topbar{height:var(--topbar-h);min-height:var(--topbar-h);background:var(--navy2);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;gap:10px}
+.tb-title{font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:600;flex:1}
+.tb-sub{font-size:11px;color:var(--muted);margin-left:8px;font-weight:400;font-family:'Inter',sans-serif}
+.tb-search{display:flex;align-items:center;gap:7px;background:var(--card);border:1px solid var(--border);border-radius:var(--r-sm);padding:7px 12px;font-size:12px;color:var(--muted);min-width:210px;transition:border-color .15s}
+.tb-search:focus-within{border-color:var(--teal-border)}
+.tb-search input{background:none;border:none;outline:none;color:var(--white);font-size:12px;width:100%}
+.tb-search input::placeholder{color:var(--muted)}
+.btn{display:inline-flex;align-items:center;gap:5px;padding:7px 13px;border-radius:var(--r-sm);font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border2);background:var(--card);color:var(--muted);font-family:'Inter',sans-serif;transition:all .15s;white-space:nowrap;user-select:none}
+.btn:hover{color:var(--white);background:var(--card2)}
+.btn i{font-size:14px}
+.btn-primary{background:var(--teal);color:var(--navy);border-color:transparent;font-weight:600;box-shadow:0 0 18px rgba(0,201,167,.2)}
+.btn-primary:hover{background:var(--teal2);color:var(--navy)}
+.btn-ghost{background:transparent;border-color:transparent}
+.btn-ghost:hover{background:rgba(255,255,255,.05)}
+.btn-danger{background:var(--red-bg);border-color:rgba(255,77,106,.2);color:var(--red)}
+.btn-danger:hover{background:rgba(255,77,106,.18)}
+.btn-sm{padding:5px 9px;font-size:11px}
+.tab-bar{background:var(--navy2);border-bottom:1px solid var(--border);display:flex;padding:0 20px}
+.tab{padding:10px 14px;font-size:12px;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;transition:all .15s;display:flex;align-items:center;gap:5px;user-select:none;white-space:nowrap}
+.tab:hover{color:var(--white)}
+.tab.active{color:var(--teal);border-bottom-color:var(--teal);font-weight:500}
+.tc{font-size:9px;font-weight:700;padding:1px 5px;border-radius:8px}
+.panel{flex:1;overflow:hidden;display:none;flex-direction:column}
+.panel.active{display:flex}
+.hidden{display:none!important}
+
+/* ── STAGE PILLS ── */
+.sp{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;padding:3px 9px;border-radius:20px;white-space:nowrap}
+.sp::before{content:'';width:5px;height:5px;border-radius:50%;background:currentColor;flex-shrink:0}
+.sp-new{background:var(--blue-bg);color:#6BAAFF}
+.sp-cont{background:var(--amber-bg);color:var(--amber)}
+.sp-visit{background:var(--purple-bg);color:var(--purple)}
+.sp-nego{background:var(--teal-bg);color:var(--teal)}
+.sp-token{background:var(--red-bg);color:#FF7B95}
+.sp-booked{background:var(--green-bg);color:var(--green)}
+.sp-lost{background:rgba(100,116,139,.1);color:#94A3B8}
+
+/* ══════════ DASHBOARD ══════════ */
+.dash-body{overflow:auto;flex:1;padding:18px}
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px}
+.sc{background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);padding:16px 18px;position:relative;overflow:hidden;transition:border-color .2s}
+.sc:hover{border-color:var(--border2)}
+.sc::after{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.sc.ct::after{background:var(--teal)} .sc.cb::after{background:var(--blue)}
+.sc.cp::after{background:var(--purple)} .sc.cg::after{background:var(--green)}
+.sc-glow{position:absolute;top:-20px;right:-20px;width:80px;height:80px;border-radius:50%;opacity:.05}
+.sc-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:600;margin-bottom:8px}
+.sc-val{font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:700;letter-spacing:-.5px;line-height:1}
+.sc-delta{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:600;padding:2px 7px;border-radius:20px;margin-top:8px}
+.d-up{background:var(--green-bg);color:var(--green)} .d-dn{background:var(--red-bg);color:var(--red)}
+.dash-grid{display:grid;grid-template-columns:3fr 2fr;gap:12px}
+.dc{background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);padding:16px;overflow:hidden}
+.dc-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.dc-title{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:600}
+.dc-link{font-size:11px;color:var(--teal);cursor:pointer}
+.dc-link:hover{opacity:.7}
+.pipe-bars{display:flex;gap:6px;align-items:flex-end;height:90px;margin-bottom:26px;padding-top:20px}
+.pb-wrap{flex:1;display:flex;flex-direction:column;align-items:center;position:relative}
+.pb-bar{width:100%;border-radius:4px 4px 0 0;min-height:4px;position:relative;transition:height .6s cubic-bezier(.4,0,.2,1)}
+.pb-val{position:absolute;top:-18px;left:50%;transform:translateX(-50%);font-size:10px;font-weight:600;color:var(--white);white-space:nowrap}
+.pb-lbl{position:absolute;bottom:-18px;left:50%;transform:translateX(-50%);font-size:9px;color:var(--muted);white-space:nowrap}
+.pipe-meta{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.pm-item{background:var(--navy);border-radius:var(--r-sm);padding:10px 12px}
+.pm-lbl{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+.pm-val{font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:700}
+.act-list{display:flex;flex-direction:column}
+.act-item{display:flex;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)}
+.act-item:last-child{border-bottom:none}
+.act-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:5px}
+.act-text{font-size:11.5px;color:var(--muted);line-height:1.5}
+.act-text strong{color:var(--white2);font-weight:500}
+.act-time{font-size:10px;color:var(--muted2);margin-top:2px}
+
+/* ══════════ LEADS TABLE ══════════ */
+.leads-body{flex:1;overflow:auto}
+.lt{width:100%;border-collapse:collapse}
+.lt th{background:var(--navy2);font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;padding:10px 14px;text-align:left;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:5;white-space:nowrap}
+.lt th.sort{cursor:pointer} .lt th.sort:hover{color:var(--white)}
+.lt td{padding:10px 14px;border-bottom:1px solid var(--border);vertical-align:middle}
+.lt tr.lr{cursor:pointer;transition:background .1s}
+.lt tr.lr:hover td{background:rgba(255,255,255,.02)}
+.lt tr:last-child td{border-bottom:none}
+.lnc{display:flex;align-items:center;gap:9px}
+.av{width:30px;height:30px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0}
+.ln{font-weight:500;font-size:13px;color:var(--white2)}
+.lp{font-size:10.5px;color:var(--muted);margin-top:1px}
+.co-chip{display:inline-flex;align-items:center;gap:4px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:5px;padding:2px 8px;font-size:10.5px;color:var(--muted);white-space:nowrap}
+.bv{font-family:'Space Grotesk',sans-serif;font-weight:600;color:var(--teal);font-size:12.5px;white-space:nowrap}
+.st{font-size:10.5px;color:var(--muted2)}
+.fu-ov{color:var(--red);font-weight:600;font-size:11px;display:flex;align-items:center;gap:3px}
+.fu-td{color:var(--amber);font-weight:600;font-size:11px;display:flex;align-items:center;gap:3px}
+.fu-up{color:var(--muted);font-size:11px}
+.ra{display:flex;gap:4px;opacity:0;transition:opacity .15s}
+.lr:hover .ra{opacity:1}
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;gap:12px;color:var(--muted);padding:60px 20px;text-align:center}
+.empty-state i{font-size:48px;opacity:.3}
+.empty-state h3{font-family:'Space Grotesk',sans-serif;font-size:16px;color:var(--white);font-weight:600}
+.empty-state p{font-size:12px;max-width:260px;line-height:1.7}
+
+/* ══════════ PIPELINE KANBAN ══════════ */
+.pipe-body{flex:1;overflow:auto}
+.board{display:flex;gap:12px;padding:16px;min-height:100%;align-items:flex-start}
+.p-col{width:185px;min-width:185px;flex-shrink:0}
+.col-hd{padding:8px 10px;border-radius:var(--r-sm) var(--r-sm) 0 0;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+.col-cnt{background:rgba(0,0,0,.25);border-radius:6px;font-size:9px;padding:1px 6px}
+.col-val{font-size:9px;color:var(--muted);margin-bottom:8px;padding:0 2px}
+.p-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px 12px;margin-bottom:6px;cursor:pointer;transition:all .18s;position:relative}
+.p-card:hover{border-color:var(--teal-border);transform:translateY(-2px);box-shadow:0 6px 24px rgba(0,0,0,.4)}
+.p-bar{position:absolute;top:0;left:0;bottom:0;width:3px;border-radius:var(--r-sm) 0 0 var(--r-sm)}
+.p-src{display:inline-block;font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;margin-bottom:5px;background:rgba(255,255,255,.06);color:var(--muted);letter-spacing:.05em}
+.p-name{font-weight:600;font-size:12.5px;color:var(--white2);margin-bottom:2px}
+.p-prop{font-size:10.5px;color:var(--muted);margin-bottom:8px;line-height:1.4}
+.p-foot{display:flex;align-items:center;justify-content:space-between}
+.p-bud{font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:600;color:var(--teal)}
+.p-agt{font-size:10px;color:var(--muted2)}
+.add-col-btn{display:flex;align-items:center;gap:5px;padding:7px;border-radius:var(--r-sm);color:var(--muted2);font-size:11px;cursor:pointer;border:1px dashed rgba(255,255,255,.08);transition:all .15s;width:100%;background:none;margin-top:2px}
+.add-col-btn:hover{border-color:var(--teal-border);color:var(--teal);background:var(--teal-bg)}
+
+/* ══════════ COMPANIES ══════════ */
+.co-body{flex:1;overflow:auto;padding:18px}
+.co-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.co-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);padding:18px;cursor:pointer;transition:all .18s;position:relative;overflow:hidden}
+.co-card:hover{border-color:var(--teal-border);transform:translateY(-2px);box-shadow:var(--shadow)}
+.co-glow{position:absolute;top:-30px;right:-30px;width:100px;height:100px;border-radius:50%;opacity:.04}
+.co-top{display:flex;align-items:flex-start;gap:12px;margin-bottom:14px}
+.co-av{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;flex-shrink:0}
+.co-name{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:15px;color:var(--white2);margin-bottom:2px}
+.co-type{font-size:11px;color:var(--muted)}
+.co-nums{display:flex;border-top:1px solid var(--border);padding-top:12px}
+.co-num{flex:1;text-align:center}
+.co-num+.co-num{border-left:1px solid var(--border)}
+.co-nv{font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:700;line-height:1;margin-bottom:3px}
+.co-nl{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.co-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:10px}
+.co-tag{font-size:10px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:4px;padding:2px 7px;color:var(--muted)}
+
+/* ══════════ FOLLOW-UPS ══════════ */
+.fu-body{flex:1;overflow:auto;padding:18px}
+.fu-sec{margin-bottom:22px}
+.fu-sec-title{font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.fu-cnt{font-size:10px;font-weight:700;padding:1px 7px;border-radius:10px}
+.fu-card{background:var(--card);border:1px solid var(--border);border-left:3px solid transparent;border-radius:var(--r-sm);padding:12px 14px;margin-bottom:6px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all .15s}
+.fu-card:hover{border-color:var(--border2);border-left-color:inherit}
+.fu-card.ov{border-left-color:var(--red)}
+.fu-card.td{border-left-color:var(--amber)}
+.fu-card.up{border-left-color:var(--blue)}
+.fu-info{flex:1}
+.fu-nm{font-weight:500;font-size:13px;color:var(--white2)}
+.fu-pr{font-size:11px;color:var(--muted);margin-top:2px}
+.fu-time{font-size:11px;font-weight:600;white-space:nowrap}
+
+/* ══════════ REPORTS ══════════ */
+.rpt-body{flex:1;overflow:auto;padding:18px}
+.rpt-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.rpt-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);padding:18px}
+.rpt-title{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:600;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between}
+.bc-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.bc-lbl{font-size:11px;color:var(--muted);width:100px;text-align:right;flex-shrink:0}
+.bc-wrap{flex:1;background:rgba(255,255,255,.05);border-radius:4px;height:20px;overflow:hidden}
+.bc-bar{height:100%;border-radius:4px;display:flex;align-items:center;padding-left:8px;transition:width .8s cubic-bezier(.4,0,.2,1)}
+.bc-bv{font-size:10px;font-weight:600;color:rgba(255,255,255,.7)}
+.at{width:100%;border-collapse:collapse;font-size:12px}
+.at th{color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.06em;font-weight:600;padding:6px 10px;border-bottom:1px solid var(--border);text-align:left}
+.at td{padding:8px 10px;border-bottom:1px solid var(--border)}
+.at tr:last-child td{border-bottom:none}
+.at tr:hover td{background:rgba(255,255,255,.02)}
+.pbar{height:6px;border-radius:3px;background:var(--teal);min-width:4px}
+
+/* ══════════ SETTINGS ══════════ */
+.set-body{flex:1;overflow:auto;padding:18px}
+.set-grid{display:grid;grid-template-columns:210px 1fr;gap:18px;max-width:860px}
+.set-nav{display:flex;flex-direction:column;gap:2px}
+.set-nav-item{padding:8px 12px;border-radius:var(--r-sm);font-size:13px;color:var(--muted);cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:8px}
+.set-nav-item:hover{background:rgba(255,255,255,.04);color:var(--white)}
+.set-nav-item.active{background:var(--teal-bg);color:var(--teal);font-weight:500}
+.set-nav-item i{font-size:15px}
+.set-panel{background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);padding:22px}
+.set-title{font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:600;margin-bottom:5px}
+.set-sub{font-size:12px;color:var(--muted);margin-bottom:22px}
+.set-f{margin-bottom:16px}
+.set-f label{display:block;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px}
+.set-input{width:100%;padding:9px 12px;background:var(--navy);border:1px solid var(--border);border-radius:var(--r-sm);color:var(--white);font-size:13px;outline:none;transition:border-color .15s;font-family:'Inter',sans-serif}
+.set-input:focus{border-color:var(--teal-border)}
+.set-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.tog-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border)}
+.tog-row:last-child{border-bottom:none}
+.tog-lbl{font-size:13px;font-weight:500;margin-bottom:2px}
+.tog-sub{font-size:11px;color:var(--muted)}
+.tog{width:40px;height:22px;background:var(--muted2);border-radius:11px;position:relative;cursor:pointer;transition:background .2s;flex-shrink:0}
+.tog.on{background:var(--teal)}
+.tog::after{content:'';position:absolute;width:16px;height:16px;border-radius:50%;background:#fff;top:3px;left:3px;transition:transform .2s;box-shadow:0 1px 4px rgba(0,0,0,.3)}
+.tog.on::after{transform:translateX(18px)}
+
+/* ══════════ DETAIL SLIDE-OVER ══════════ */
+.d-overlay{position:fixed;inset:0;z-index:50;background:rgba(5,8,18,.6);opacity:0;pointer-events:none;transition:opacity .25s}
+.d-overlay.open{opacity:1;pointer-events:all}
+.d-panel{position:fixed;right:0;top:0;bottom:0;width:400px;background:var(--card);border-left:1px solid var(--teal-border);z-index:51;transform:translateX(100%);transition:transform .28s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;box-shadow:-30px 0 80px rgba(0,0,0,.7)}
+.d-panel.open{transform:translateX(0)}
+.d-head{padding:16px 18px;border-bottom:1px solid var(--border);background:var(--navy2);display:flex;align-items:flex-start;gap:12px}
+.d-av{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0}
+.d-name{font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:600;color:var(--white2)}
+.d-phone{font-size:11px;color:var(--muted);margin-top:2px}
+.d-close{margin-left:auto;cursor:pointer;color:var(--muted);width:28px;height:28px;border-radius:5px;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0}
+.d-close:hover{background:rgba(255,255,255,.08);color:var(--white)}
+.d-close i{font-size:18px}
+.d-body{overflow:auto;flex:1}
+.d-sec{padding:14px 18px;border-bottom:1px solid var(--border)}
+.d-sec-t{font-size:9px;font-weight:700;color:var(--muted2);text-transform:uppercase;letter-spacing:.12em;margin-bottom:10px}
+.d-row{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+.d-row:last-child{margin-bottom:0}
+.d-key{font-size:12px;color:var(--muted);flex-shrink:0}
+.d-val{font-size:12px;font-weight:500;color:var(--white2);text-align:right;margin-left:12px}
+.d-note{background:var(--navy);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px 12px;font-size:12px;color:var(--muted);line-height:1.7}
+.tl-item{display:flex;gap:10px;margin-bottom:12px}
+.tl-item:last-child{margin-bottom:0}
+.tl-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:5px}
+.tl-text{font-size:11.5px;color:var(--muted);line-height:1.5}
+.tl-text strong{color:var(--white2);font-weight:500}
+.tl-time{font-size:10px;color:var(--muted2);margin-top:2px}
+.d-stage-sel{width:100%;padding:9px 12px;background:var(--navy);border:1px solid var(--border);border-radius:var(--r-sm);color:var(--white);font-size:12.5px;outline:none;font-family:'Inter',sans-serif;cursor:pointer;transition:border-color .15s}
+.d-stage-sel:focus{border-color:var(--teal-border)}
+.d-actions{padding:12px 18px;border-top:1px solid var(--border);display:flex;gap:7px}
+.d-actions .btn{flex:1;justify-content:center}
+
+/* ══════════ MODAL ══════════ */
+.m-overlay{position:fixed;inset:0;z-index:100;background:rgba(5,8,18,.9);display:none;align-items:center;justify-content:center}
+.m-overlay.open{display:flex}
+.modal{background:var(--card);border:1px solid var(--teal-border);border-radius:var(--r-lg);width:460px;max-height:92vh;overflow:auto;box-shadow:0 30px 80px rgba(0,0,0,.8)}
+.m-head{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--navy2);border-radius:var(--r-lg) var(--r-lg) 0 0;position:sticky;top:0;z-index:1}
+.m-title{font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:600}
+.m-close{cursor:pointer;color:var(--muted);width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:5px;transition:all .15s}
+.m-close:hover{color:var(--white);background:rgba(255,255,255,.08)}
+.m-close i{font-size:20px}
+.m-body{padding:18px 20px}
+.fg{margin-bottom:13px}
+.fg label{display:block;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px}
+.fg input,.fg select,.fg textarea{width:100%;padding:9px 12px;background:var(--navy);border:1px solid var(--border);border-radius:var(--r-sm);color:var(--white);font-size:12.5px;font-family:'Inter',sans-serif;outline:none;transition:border-color .15s}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--teal-border)}
+.fg select option{background:#1A2742}
+.fg textarea{resize:vertical;min-height:65px;line-height:1.6}
+.fg-row{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.m-foot{padding:12px 20px 16px;display:flex;gap:8px;justify-content:flex-end;border-top:1px solid var(--border)}
+
+/* ══════════ CONFIRM ══════════ */
+.c-overlay{position:fixed;inset:0;z-index:200;background:rgba(5,8,18,.9);display:none;align-items:center;justify-content:center}
+.c-overlay.open{display:flex}
+.c-box{background:var(--card);border:1px solid var(--border2);border-radius:var(--r-lg);width:360px;padding:24px;box-shadow:0 30px 80px rgba(0,0,0,.8)}
+.c-icon{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:14px;font-size:20px;background:var(--red-bg)}
+.c-title{font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:600;margin-bottom:6px}
+.c-msg{font-size:13px;color:var(--muted);margin-bottom:20px;line-height:1.6}
+.c-actions{display:flex;gap:8px;justify-content:flex-end}
+
+/* ══════════ TOAST ══════════ */
+.toast-wrap{position:fixed;bottom:24px;right:24px;z-index:999;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.toast{background:var(--card2);border:1px solid var(--teal-border);border-radius:var(--r-sm);padding:11px 15px;display:flex;align-items:center;gap:9px;font-size:13px;transform:translateY(20px);opacity:0;transition:all .3s;box-shadow:0 8px 30px rgba(0,0,0,.5);max-width:300px}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.err{border-color:rgba(255,77,106,.3)}
+.toast i{font-size:15px}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- ════ SIDEBAR ════ -->
+<div class="sidebar">
+  <div class="sb-logo" onclick="nav('dashboard')">
+    <div class="logo-icon">R</div>
+    <div><div class="logo-name">Realtix</div><div class="logo-tag">Real Estate CRM</div></div>
+  </div>
+  <div class="sb-sec">Overview</div>
+  <div class="sb-item" data-v="dashboard" onclick="nav('dashboard',this)"><i class="ti ti-layout-dashboard"></i> Dashboard</div>
+  <div class="sb-sec">CRM</div>
+  <div class="sb-item active" data-v="leads" onclick="nav('leads',this)"><i class="ti ti-user-plus"></i> Leads <span class="sb-badge b-teal" id="sb-l">0</span></div>
+  <div class="sb-item" data-v="pipeline" onclick="nav('pipeline',this)"><i class="ti ti-layout-kanban"></i> Pipeline</div>
+  <div class="sb-item" data-v="companies" onclick="nav('companies',this)"><i class="ti ti-building"></i> Companies</div>
+  <div class="sb-sec">Sales</div>
+  <div class="sb-item" data-v="followups" onclick="nav('followups',this)"><i class="ti ti-calendar-check"></i> Follow-ups <span class="sb-badge b-red" id="sb-f">0</span></div>
+  <div class="sb-item" data-v="reports" onclick="nav('reports',this)"><i class="ti ti-chart-bar"></i> Reports</div>
+  <div class="sb-sec">System</div>
+  <div class="sb-item" data-v="settings" onclick="nav('settings',this)"><i class="ti ti-settings"></i> Settings</div>
+  <div class="sb-bottom">
+    <div class="sb-user"><div class="user-av">AK</div><div><div class="user-name">Ahmad Khan</div><div class="user-role">Sales Manager</div></div></div>
+  </div>
+</div>
+
+<!-- ════ MAIN ════ -->
+<div class="main">
+
+<!-- DASHBOARD -->
+<div id="v-dashboard" class="panel">
+  <div class="topbar"><div class="tb-title">Dashboard <span class="tb-sub">June 2026 · Karachi</span></div>
+    <button class="btn"><i class="ti ti-calendar"></i> This month</button>
+    <button class="btn btn-primary" onclick="openAdd()"><i class="ti ti-plus"></i> Add lead</button>
+  </div>
+  <div class="dash-body">
+    <div class="stat-grid">
+      <div class="sc ct"><div class="sc-glow" style="background:var(--teal)"></div><div class="sc-lbl">Total leads</div><div class="sc-val" id="s-tot">0</div><div class="sc-delta d-up"><i class="ti ti-trending-up" style="font-size:11px"></i> 18% this month</div></div>
+      <div class="sc cb"><div class="sc-glow" style="background:var(--blue)"></div><div class="sc-lbl">Site visits</div><div class="sc-val" id="s-vis">0</div><div class="sc-delta d-up"><i class="ti ti-trending-up" style="font-size:11px"></i> 12%</div></div>
+      <div class="sc cp"><div class="sc-glow" style="background:var(--purple)"></div><div class="sc-lbl">Token bookings</div><div class="sc-val" id="s-tok">0</div><div class="sc-delta d-up"><i class="ti ti-trending-up" style="font-size:11px"></i> 27%</div></div>
+      <div class="sc cg"><div class="sc-glow" style="background:var(--green)"></div><div class="sc-lbl">Pipeline value</div><div class="sc-val" id="s-val">₨0</div><div class="sc-delta d-up"><i class="ti ti-trending-up" style="font-size:11px"></i> 9%</div></div>
+    </div>
+    <div class="dash-grid">
+      <div class="dc">
+        <div class="dc-hd"><div class="dc-title">Pipeline by stage</div><span class="dc-link" onclick="nav('pipeline')">View board →</span></div>
+        <div class="pipe-bars" id="d-bars"></div>
+        <div class="pipe-meta">
+          <div class="pm-item"><div class="pm-lbl">Conversion rate</div><div class="pm-val" style="color:var(--teal)" id="s-conv">0%</div></div>
+          <div class="pm-item"><div class="pm-lbl">Avg deal size</div><div class="pm-val" id="s-avg">₨0</div></div>
+          <div class="pm-item"><div class="pm-lbl">Follow-ups today</div><div class="pm-val" style="color:var(--red)" id="s-fu">0</div></div>
+        </div>
+      </div>
+      <div class="dc"><div class="dc-hd"><div class="dc-title">Recent activity</div></div><div class="act-list" id="act-feed"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- LEADS -->
+<div id="v-leads" class="panel active">
+  <div class="topbar">
+    <div class="tb-title">Leads</div>
+    <div class="tb-search"><i class="ti ti-search" style="font-size:14px;flex-shrink:0"></i><input id="l-search" placeholder="Search name, phone, company..." oninput="renderLeads()"></div>
+    <button class="btn" onclick="cycleStage()"><i class="ti ti-filter"></i> <span id="f-lbl">All stages</span></button>
+    <button class="btn btn-primary" onclick="openAdd()"><i class="ti ti-plus"></i> Add lead</button>
+  </div>
+  <div class="tab-bar">
+    <div class="tab active" onclick="setTab('all',this)">All leads <span class="tc" id="tc-all" style="background:var(--teal-bg);color:var(--teal)">0</span></div>
+    <div class="tab" onclick="setTab('mine',this)">My leads</div>
+    <div class="tab" onclick="setTab('today',this)">Follow-up today <span class="tc" id="tc-today" style="background:var(--red-bg);color:var(--red)">0</span></div>
+    <div class="tab" onclick="setTab('lost',this)">Lost</div>
+  </div>
+  <div class="leads-body">
+    <table class="lt">
+      <thead><tr>
+        <th class="sort" onclick="srt('name')">Lead <i class="ti ti-selector" style="font-size:11px;vertical-align:middle"></i></th>
+        <th>Company</th><th>Property interest</th>
+        <th class="sort" onclick="srt('budget')">Budget <i class="ti ti-selector" style="font-size:11px;vertical-align:middle"></i></th>
+        <th>Source</th>
+        <th class="sort" onclick="srt('stage')">Stage <i class="ti ti-selector" style="font-size:11px;vertical-align:middle"></i></th>
+        <th>Agent</th>
+        <th class="sort" onclick="srt('followUp')">Follow-up <i class="ti ti-selector" style="font-size:11px;vertical-align:middle"></i></th>
+        <th></th>
+      </tr></thead>
+      <tbody id="l-tbody"></tbody>
+    </table>
+    <div id="l-empty" class="empty-state hidden">
+      <i class="ti ti-user-search"></i><h3>No leads found</h3>
+      <p>Try a different search or filter, or add a new lead.</p>
+      <button class="btn btn-primary" onclick="openAdd()"><i class="ti ti-plus"></i> Add lead</button>
+    </div>
+  </div>
+</div>
+
+<!-- PIPELINE -->
+<div id="v-pipeline" class="panel">
+  <div class="topbar"><div class="tb-title">Pipeline board</div><div id="p-val" style="font-size:11px;color:var(--muted)"></div>
+    <button class="btn btn-primary" onclick="openAdd()"><i class="ti ti-plus"></i> Add lead</button>
+  </div>
+  <div class="pipe-body"><div class="board" id="board"></div></div>
+</div>
+
+<!-- COMPANIES -->
+<div id="v-companies" class="panel">
+  <div class="topbar"><div class="tb-title">Companies</div>
+    <div class="tb-search"><i class="ti ti-search" style="font-size:14px;flex-shrink:0"></i><input placeholder="Search companies..." oninput="renderCo(this.value)"></div>
+    <button class="btn btn-primary" onclick="toast('Company form — coming in full product','ti-building')"><i class="ti ti-plus"></i> Add company</button>
+  </div>
+  <div class="co-body"><div class="co-grid" id="co-grid"></div></div>
+</div>
+
+<!-- FOLLOW-UPS -->
+<div id="v-followups" class="panel">
+  <div class="topbar"><div class="tb-title">Follow-ups</div><div id="fu-sum" style="font-size:11px;color:var(--muted)"></div></div>
+  <div class="fu-body" id="fu-body"></div>
+</div>
+
+<!-- REPORTS -->
+<div id="v-reports" class="panel">
+  <div class="topbar"><div class="tb-title">Reports</div>
+    <button class="btn" onclick="toast('Export ready','ti-download')"><i class="ti ti-download"></i> Export PDF</button>
+  </div>
+  <div class="rpt-body">
+    <div class="rpt-grid">
+      <div class="rpt-card"><div class="rpt-title">Leads by source</div><div id="r-src"></div></div>
+      <div class="rpt-card"><div class="rpt-title">Pipeline funnel</div><div id="r-funnel"></div></div>
+      <div class="rpt-card" style="grid-column:1/-1"><div class="rpt-title">Agent performance</div>
+        <table class="at"><thead><tr><th>Agent</th><th>Total leads</th><th>Site visits</th><th>Booked</th><th>Conv %</th><th>Pipeline value</th><th>Performance</th></tr></thead>
+        <tbody id="r-agents"></tbody></table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SETTINGS -->
+<div id="v-settings" class="panel">
+  <div class="topbar"><div class="tb-title">Settings</div></div>
+  <div class="set-body">
+    <div class="set-grid">
+      <div class="set-nav">
+        <div class="set-nav-item active"><i class="ti ti-building"></i> Agency profile</div>
+        <div class="set-nav-item"><i class="ti ti-users"></i> Team & agents</div>
+        <div class="set-nav-item"><i class="ti ti-layout-kanban"></i> Pipeline stages</div>
+        <div class="set-nav-item"><i class="ti ti-bell"></i> Notifications</div>
+        <div class="set-nav-item"><i class="ti ti-lock"></i> Security</div>
+      </div>
+      <div class="set-panel">
+        <div class="set-title">Agency profile</div>
+        <div class="set-sub">Configure your agency's basic information.</div>
+        <div class="set-row">
+          <div class="set-f"><label>Agency name</label><input class="set-input" value="Realtix Demo Agency"></div>
+          <div class="set-f"><label>Business type</label><input class="set-input" value="Real Estate Agency"></div>
+        </div>
+        <div class="set-row">
+          <div class="set-f"><label>City</label><input class="set-input" value="Karachi"></div>
+          <div class="set-f"><label>Phone</label><input class="set-input" value="+92 300 0000000"></div>
+        </div>
+        <div class="set-f"><label>Email</label><input class="set-input" value="info@realtixagency.com"></div>
+        <div style="margin-top:8px">
+          <div class="tog-row"><div><div class="tog-lbl">Follow-up reminders</div><div class="tog-sub">Get notified when a follow-up is due</div></div><div class="tog on" onclick="this.classList.toggle('on')"></div></div>
+          <div class="tog-row"><div><div class="tog-lbl">New lead alerts</div><div class="tog-sub">Alert when a lead is assigned to you</div></div><div class="tog on" onclick="this.classList.toggle('on')"></div></div>
+          <div class="tog-row"><div><div class="tog-lbl">Daily digest email</div><div class="tog-sub">Morning summary of pipeline activity</div></div><div class="tog" onclick="this.classList.toggle('on')"></div></div>
+        </div>
+        <div style="margin-top:18px;display:flex;justify-content:flex-end">
+          <button class="btn btn-primary" onclick="toast('Settings saved','ti-check')"><i class="ti ti-check"></i> Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /main -->
+</div><!-- /app -->
+
+<!-- DETAIL SLIDE-OVER -->
+<div class="d-overlay" id="d-overlay" onclick="closeDetail()"></div>
+<div class="d-panel" id="d-panel">
+  <div class="d-head">
+    <div class="d-av" id="d-av"></div>
+    <div><div class="d-name" id="d-name"></div><div class="d-phone" id="d-phone"></div></div>
+    <div class="d-close" onclick="closeDetail()"><i class="ti ti-x"></i></div>
+  </div>
+  <div class="d-body">
+    <div class="d-sec">
+      <div class="d-sec-t">Move pipeline stage</div>
+      <select class="d-stage-sel" id="d-stage" onchange="moveStage(this.value)">
+        <option value="new">New inquiry</option><option value="contacted">Contacted</option>
+        <option value="visit">Site visit</option><option value="nego">Negotiation</option>
+        <option value="token">Token paid</option><option value="booked">Booked ✓</option>
+        <option value="lost">Lost</option>
+      </select>
+    </div>
+    <div class="d-sec">
+      <div class="d-sec-t">Lead details</div>
+      <div class="d-row"><span class="d-key">Company</span><span class="d-val" id="d-co" style="color:var(--teal)"></span></div>
+      <div class="d-row"><span class="d-key">Property</span><span class="d-val" id="d-prop"></span></div>
+      <div class="d-row"><span class="d-key">Budget</span><span class="d-val" id="d-bud" style="color:var(--teal);font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:14px"></span></div>
+      <div class="d-row"><span class="d-key">Source</span><span class="d-val" id="d-src"></span></div>
+      <div class="d-row"><span class="d-key">Assigned to</span><span class="d-val" id="d-agt"></span></div>
+      <div class="d-row"><span class="d-key">Follow-up</span><span class="d-val" id="d-fu"></span></div>
+      <div class="d-row"><span class="d-key">Priority</span><span class="d-val" id="d-pri"></span></div>
+      <div class="d-row"><span class="d-key">CNIC</span><span class="d-val" id="d-cnic" style="color:var(--muted)"></span></div>
+    </div>
+    <div class="d-sec"><div class="d-sec-t">Notes</div><div class="d-note" id="d-notes"></div></div>
+    <div class="d-sec"><div class="d-sec-t">Activity timeline</div><div id="d-tl"></div></div>
+  </div>
+  <div class="d-actions">
+    <button class="btn btn-primary" onclick="logCall()"><i class="ti ti-phone"></i> Log call</button>
+    <button class="btn" onclick="toast('Opening WhatsApp...','ti-brand-whatsapp')"><i class="ti ti-brand-whatsapp"></i> WhatsApp</button>
+    <button class="btn" onclick="openEdit()"><i class="ti ti-pencil"></i> Edit</button>
+    <button class="btn btn-danger btn-sm" onclick="confirmDel()"><i class="ti ti-trash"></i></button>
+  </div>
+</div>
+
+<!-- ADD/EDIT MODAL -->
+<div class="m-overlay" id="m-lead" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="m-head"><div class="m-title" id="m-title">Add new lead</div><div class="m-close" onclick="closeModal()"><i class="ti ti-x"></i></div></div>
+    <div class="m-body">
+      <div class="fg-row">
+        <div class="fg"><label>Full name *</label><input id="f-name" placeholder="Ahmed Khan"></div>
+        <div class="fg"><label>Phone *</label><input id="f-phone" placeholder="+92 300 0000000"></div>
+      </div>
+      <div class="fg-row">
+        <div class="fg"><label>Email</label><input id="f-email" placeholder="optional"></div>
+        <div class="fg"><label>CNIC</label><input id="f-cnic" placeholder="42101-1234567-1"></div>
+      </div>
+      <div class="fg-row">
+        <div class="fg"><label>Lead source *</label>
+          <select id="f-src"><option>Zameen.com</option><option>Graana.com</option><option>OLX Pakistan</option><option>WhatsApp</option><option>Referral</option><option>Walk-in</option><option>Channel partner</option><option>Direct</option></select>
+        </div>
+        <div class="fg"><label>Stage</label>
+          <select id="f-stage"><option value="new">New inquiry</option><option value="contacted">Contacted</option><option value="visit">Site visit</option><option value="nego">Negotiation</option><option value="token">Token paid</option><option value="booked">Booked</option></select>
+        </div>
+      </div>
+      <div class="fg"><label>Associated company</label>
+        <select id="f-co"><option value="">— None / Individual —</option><option>DHA Builders</option><option>Emaar Pakistan</option><option>Bahria Town</option><option>Graana.com</option><option>Zameen Developers</option><option>Al-Hafeez Developers</option><option>Saima Group</option></select>
+      </div>
+      <div class="fg-row">
+        <div class="fg"><label>Property type</label>
+          <select id="f-pt"><option>Plot</option><option>Apartment</option><option>Villa</option><option>Commercial</option><option>Office</option></select>
+        </div>
+        <div class="fg"><label>Property details</label><input id="f-pd" placeholder="Phase 8 · 500 sqyd"></div>
+      </div>
+      <div class="fg-row">
+        <div class="fg"><label>Budget (PKR)</label><input id="f-bud" placeholder="1.5 Cr or 85 Lac"></div>
+        <div class="fg"><label>Priority</label>
+          <select id="f-pri"><option>Medium</option><option>High</option><option>Urgent</option><option>Low</option></select>
+        </div>
+      </div>
+      <div class="fg-row">
+        <div class="fg"><label>Assigned agent</label>
+          <select id="f-agt"><option>Sara M.</option><option>Ali Z.</option><option>Omar S.</option><option>Hina K.</option><option>Ahmad Khan</option></select>
+        </div>
+        <div class="fg"><label>Follow-up date</label><input type="date" id="f-fu"></div>
+      </div>
+      <div class="fg"><label>Notes</label><textarea id="f-notes" placeholder="Additional details about this lead..."></textarea></div>
+    </div>
+    <div class="m-foot">
+      <button class="btn" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveLead()"><i class="ti ti-check"></i> <span id="m-save">Save lead</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM -->
+<div class="c-overlay" id="c-overlay">
+  <div class="c-box">
+    <div class="c-icon"><i class="ti ti-trash" style="color:var(--red)"></i></div>
+    <div class="c-title">Delete lead?</div>
+    <div class="c-msg" id="c-msg">This action cannot be undone.</div>
+    <div class="c-actions">
+      <button class="btn" onclick="closeConfirm()">Cancel</button>
+      <button class="btn btn-danger" onclick="doDelete()">Delete</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-wrap" id="toast-wrap"></div>
+
+<script>
+// ══ DATA ══
+const ST = {
+  new:      {label:'New inquiry',  cls:'sp-new',    color:'#4A90E2', bg:'rgba(74,144,226,.12)'},
+  contacted:{label:'Contacted',    cls:'sp-cont',   color:'#FFB020', bg:'rgba(255,176,32,.12)'},
+  visit:    {label:'Site visit',   cls:'sp-visit',  color:'#9B72F8', bg:'rgba(155,114,248,.12)'},
+  nego:     {label:'Negotiation',  cls:'sp-nego',   color:'#00C9A7', bg:'rgba(0,201,167,.12)'},
+  token:    {label:'Token paid',   cls:'sp-token',  color:'#FF4D6A', bg:'rgba(255,77,106,.12)'},
+  booked:   {label:'Booked \u2713',cls:'sp-booked', color:'#06D6A0', bg:'rgba(6,214,160,.12)'},
+  lost:     {label:'Lost',         cls:'sp-lost',   color:'#94A3B8', bg:'rgba(100,116,139,.12)'},
+};
+const AVC=[['rgba(0,201,167,.15)','#00C9A7'],['rgba(155,114,248,.15)','#9B72F8'],['rgba(74,144,226,.15)','#6BAAFF'],['rgba(6,214,160,.15)','#06D6A0'],['rgba(255,176,32,.15)','#FFB020'],['rgba(255,77,106,.15)','#FF7B95']];
+const getAV=n=>{let h=0;for(let c of n)h=(h*31+c.charCodeAt(0))%AVC.length;return AVC[h]};
+const ini=n=>{const p=n.trim().split(' ');return(p[0][0]+(p[1]?p[1][0]:'')).toUpperCase()};
+const b2n=s=>{if(!s)return 0;s=s.toString().toLowerCase().replace(/[₨,\s]/g,'');if(s.includes('cr'))return parseFloat(s)*1e7;if(s.includes('lac'))return parseFloat(s)*1e5;return parseFloat(s)||0};
+const fmtB=n=>{if(!n)return '\u2014';if(n>=1e7)return '\u20A8 '+(n/1e7).toFixed(1)+' Cr';if(n>=1e5)return '\u20A8 '+(n/1e5).toFixed(1)+' Lac';return '\u20A8 '+n.toLocaleString()};
+const TODAY=new Date().toISOString().split('T')[0];
+const dOff=(d,n)=>{const dt=new Date(d+'T00:00:00');dt.setDate(dt.getDate()+n);return dt.toISOString().split('T')[0]};
+const fmtD=d=>{if(!d)return '\u2014';const dt=new Date(d+'T00:00:00');return dt.toLocaleDateString('en-PK',{month:'short',day:'numeric'})};
+
+let leads=[
+  {id:1,name:'Ahmed Khan',phone:'+92 300 1234567',email:'ahmed@email.com',cnic:'42101-1234567-1',source:'Zameen.com',stage:'visit',priority:'High',pt:'Plot',pd:'Phase 8 \u00B7 500 sqyd',budget:'3.5 Cr',company:'DHA Builders',agent:'Sara M.',followUp:TODAY,notes:'Interested in corner plot. Budget flexible up to 4 Cr for right location. Wants to visit Phase 8 this weekend.',tl:[{txt:'Moved to <strong>Site visit</strong>',time:'Today, 10:30 AM',c:'#9B72F8'},{txt:'Follow-up call \u2014 10 mins',time:'Yesterday, 3:15 PM',c:'#FFB020'},{txt:'Lead created from <strong>Zameen.com</strong>',time:'Jun 14',c:'#4A90E2'}]},
+  {id:2,name:'Fatima Raza',phone:'+92 321 9876543',email:'',cnic:'',source:'Referral',stage:'nego',priority:'High',pt:'Apartment',pd:'3 BHK \u00B7 Coral Bay Karachi',budget:'1.8 Cr',company:'Emaar Pakistan',agent:'Ali Z.',followUp:dOff(TODAY,2),notes:'Referred by Usman. Very serious buyer, needs keys by Dec 2026. Price negotiation in progress.',tl:[{txt:'Moved to <strong>Negotiation</strong>',time:'Yesterday',c:'#00C9A7'},{txt:'Price negotiation call \u2014 25 mins',time:'2 days ago',c:'#FFB020'},{txt:'Site visit completed',time:'Jun 15',c:'#9B72F8'},{txt:'Lead via <strong>Referral</strong>',time:'Jun 10',c:'#4A90E2'}]},
+  {id:3,name:'Usman Aslam',phone:'+92 333 5554433',email:'usman@gmail.com',cnic:'',source:'WhatsApp',stage:'contacted',priority:'Medium',pt:'Villa',pd:'10 Marla \u00B7 Bahria Rawalpindi',budget:'90 Lac',company:'Bahria Town',agent:'Sara M.',followUp:dOff(TODAY,-1),notes:'Wants to move within 3 months. Currently renting in Gulshan Iqbal.',tl:[{txt:'First call connected \u2014 8 mins',time:'Yesterday',c:'#FFB020'},{txt:'Lead from <strong>WhatsApp</strong> campaign',time:'Jun 14',c:'#4A90E2'}]},
+  {id:4,name:'Zainab Qureshi',phone:'+92 300 7778899',email:'',cnic:'42301-2345678-0',source:'Channel partner',stage:'token',priority:'Urgent',pt:'Commercial',pd:'Shop \u00B7 Gulberg III \u00B7 400 sqft',budget:'2.2 Cr',company:'Graana.com',agent:'Ali Z.',followUp:'',notes:'Token of 10 Lac paid. Drafting booking agreement now.',tl:[{txt:'Token paid \u2014 deal at <strong>\u20A8 2.2 Cr</strong>',time:'Today',c:'#FF4D6A'},{txt:'Moved to <strong>Negotiation</strong>',time:'2 days ago',c:'#00C9A7'},{txt:'Site visit done, very happy',time:'Jun 13',c:'#9B72F8'},{txt:'Lead via <strong>Channel partner</strong>',time:'Jun 8',c:'#4A90E2'}]},
+  {id:5,name:'Muhammad Bilal',phone:'+92 321 1112233',email:'',cnic:'',source:'OLX Pakistan',stage:'new',priority:'Low',pt:'Plot',pd:'Phase 6 DHA \u00B7 240 sqyd',budget:'1.1 Cr',company:'DHA Builders',agent:'Omar S.',followUp:TODAY,notes:'First inquiry via OLX. Not yet contacted.',tl:[{txt:'Lead captured from <strong>OLX Pakistan</strong>',time:'Today',c:'#4A90E2'}]},
+  {id:6,name:'Sara Hussain',phone:'+92 333 9990011',email:'sara.h@yahoo.com',cnic:'42201-3456789-2',source:'Walk-in',stage:'booked',priority:'Medium',pt:'Apartment',pd:'2 BHK \u00B7 Crescent Bay',budget:'95 Lac',company:'Emaar Pakistan',agent:'Sara M.',followUp:'',notes:'Booking complete. Final payment schedule confirmed with finance team.',tl:[{txt:'<strong>Booked!</strong> Deal closed at \u20A8 95 Lac',time:'Yesterday',c:'#06D6A0'},{txt:'Token paid',time:'3 days ago',c:'#FF4D6A'},{txt:'Negotiation completed',time:'Jun 12',c:'#00C9A7'},{txt:'Walk-in at office',time:'Jun 5',c:'#4A90E2'}]},
+  {id:7,name:'Hira Baig',phone:'+92 300 4445566',email:'',cnic:'',source:'Zameen.com',stage:'visit',priority:'High',pt:'Plot',pd:'F-10 Islamabad \u00B7 250 sqyd',budget:'2.8 Cr',company:'Zameen Developers',agent:'Omar S.',followUp:TODAY,notes:'Based in Islamabad. Investment buyer. Wants to finalize before Eid.',tl:[{txt:'Site visit scheduled this weekend',time:'Today',c:'#9B72F8'},{txt:'Introductory call \u2014 15 mins',time:'Yesterday',c:'#FFB020'},{txt:'Lead from <strong>Zameen.com</strong>',time:'Jun 13',c:'#4A90E2'}]},
+  {id:8,name:'Asif Mehmood',phone:'+92 321 8887766',email:'',cnic:'',source:'Referral',stage:'contacted',priority:'Medium',pt:'Plot',pd:'Phase 2 DHA \u00B7 1 Kanal',budget:'2.0 Cr',company:'DHA Builders',agent:'Omar S.',followUp:dOff(TODAY,-3),notes:'Referred by Ahmed Khan. Looking to buy next month.',tl:[{txt:'Referred by <strong>Ahmed Khan</strong>',time:'Jun 13',c:'#4A90E2'}]},
+  {id:9,name:'Kamran Malik',phone:'+92 333 6665544',email:'',cnic:'',source:'Zameen.com',stage:'nego',priority:'Medium',pt:'Apartment',pd:'3 BHK \u00B7 Bahria Heights',budget:'1.5 Cr',company:'Bahria Town',agent:'Ali Z.',followUp:dOff(TODAY,1),notes:'Has sold old flat. Ready to book after Eid. Flexible on floor.',tl:[{txt:'Moved to <strong>Negotiation</strong>',time:'3 days ago',c:'#00C9A7'},{txt:'Site visit completed',time:'Jun 11',c:'#9B72F8'},{txt:'Lead from <strong>Zameen.com</strong>',time:'Jun 6',c:'#4A90E2'}]},
+  {id:10,name:'Tariq Butt',phone:'+92 300 2223344',email:'',cnic:'',source:'Zameen.com',stage:'lost',priority:'Low',pt:'Plot',pd:'Phase 5 DHA \u00B7 1 Kanal',budget:'4.5 Cr',company:'DHA Builders',agent:'Omar S.',followUp:'',notes:'Budget expectations too high vs market. Went with competitor.',tl:[{txt:'Marked as <strong>Lost</strong> \u2014 budget mismatch',time:'Yesterday',c:'#94A3B8'},{txt:'Lead from <strong>Zameen.com</strong>',time:'Jun 9',c:'#4A90E2'}]},
+];
+
+const COS=[
+  {name:'DHA Builders',type:'Developer \u00B7 Defence Housing Authority',cities:['Karachi','Lahore'],pts:['Plots','Villas'],bg:'rgba(0,201,167,.15)',tc:'#00C9A7'},
+  {name:'Emaar Pakistan',type:'Developer \u00B7 International chain',cities:['Karachi'],pts:['Apartments','High-rise'],bg:'rgba(155,114,248,.15)',tc:'#9B72F8'},
+  {name:'Bahria Town',type:'Developer \u00B7 Gated community',cities:['Karachi','RWP','Lahore'],pts:['Villas','Plots'],bg:'rgba(74,144,226,.15)',tc:'#6BAAFF'},
+  {name:'Graana.com',type:'Agency \u00B7 Property portal',cities:['Islamabad'],pts:['Commercial','All types'],bg:'rgba(255,176,32,.15)',tc:'#FFB020'},
+  {name:'Zameen Developers',type:'Developer \u00B7 Property marketplace',cities:['Islamabad','Lahore'],pts:['Plots','Apartments'],bg:'rgba(6,214,160,.15)',tc:'#06D6A0'},
+  {name:'Al-Hafeez Developers',type:'Developer \u00B7 Local builder',cities:['Lahore'],pts:['Apartments','Offices'],bg:'rgba(255,77,106,.15)',tc:'#FF7B95'},
+];
+
+let nextId=leads.length+1, curId=null, editId=null, cfmCb=null;
+let curTab='all', stageFilter=null, sfIdx=0, sortF=null, sortD=1;
+const sfList=[null,'new','contacted','visit','nego','token','booked','lost'];
+let activity=[
+  {txt:'<strong>Ahmed Khan</strong> moved to Site visit',time:'2 mins ago',c:'#9B72F8'},
+  {txt:'<strong>Zainab Qureshi</strong> paid token \u2014 \u20A8 2.2 Cr',time:'18 mins ago',c:'#06D6A0'},
+  {txt:'<strong>New lead</strong> from Zameen.com',time:'1 hr ago',c:'#4A90E2'},
+  {txt:'<strong>Fatima Raza</strong> moved to Negotiation',time:'2 hrs ago',c:'#00C9A7'},
+  {txt:'<strong>Sara Hussain</strong> booking closed',time:'Yesterday',c:'#06D6A0'},
+];
+
+// ══ NAV ══
+function nav(id, el) {
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('v-'+id).classList.add('active');
+  document.querySelectorAll('.sb-item').forEach(i=>i.classList.remove('active'));
+  if(el) el.classList.add('active');
+  else{const t=document.querySelector('[data-v="'+id+'"]');if(t)t.classList.add('active');}
+  if(id==='dashboard') renderDash();
+  if(id==='pipeline') renderKanban();
+  if(id==='companies') renderCo();
+  if(id==='followups') renderFU();
+  if(id==='reports') renderReports();
+  if(id==='leads') renderLeads();
+}
+
+// ══ TABS & FILTER ══
+function setTab(t,el){curTab=t;document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));if(el)el.classList.add('active');renderLeads();}
+function cycleStage(){sfIdx=(sfIdx+1)%sfList.length;stageFilter=sfList[sfIdx];document.getElementById('f-lbl').textContent=stageFilter?ST[stageFilter].label:'All stages';renderLeads();}
+function srt(f){if(sortF===f)sortD*=-1;else{sortF=f;sortD=1;}renderLeads();}
+
+// ══ LEADS ══
+function filtered(){
+  const q=(document.getElementById('l-search')||{}).value?.toLowerCase()||'';
+  let L=leads.filter(l=>{
+    const mq=!q||l.name.toLowerCase().includes(q)||l.phone.includes(q)||(l.company||'').toLowerCase().includes(q)||(l.source||'').toLowerCase().includes(q);
+    const ms=!stageFilter||l.stage===stageFilter;
+    let mt=true;
+    if(curTab==='mine')mt=l.agent==='Ahmad Khan';
+    if(curTab==='today')mt=l.followUp===TODAY;
+    if(curTab==='lost')mt=l.stage==='lost';
+    return mq&&ms&&mt;
+  });
+  if(sortF)L.sort((a,b)=>{let va=a[sortF]||'',vb=b[sortF]||'';if(sortF==='budget'){va=b2n(va);vb=b2n(vb);}return(va>vb?1:-1)*sortD;});
+  return L;
+}
+
+function renderLeads(){
+  const L=filtered();
+  const tb=document.getElementById('l-tbody'), em=document.getElementById('l-empty');
+  document.getElementById('tc-all').textContent=leads.length;
+  document.getElementById('tc-today').textContent=leads.filter(l=>l.followUp===TODAY).length;
+  document.getElementById('sb-l').textContent=leads.length;
+  const fuCnt=leads.filter(l=>l.followUp&&l.followUp<=TODAY&&!['booked','lost'].includes(l.stage)).length;
+  const sbf=document.getElementById('sb-f');
+  sbf.textContent=fuCnt||''; sbf.style.display=fuCnt?'':'none';
+  if(!L.length){em.classList.remove('hidden');tb.innerHTML='';return;}
+  em.classList.add('hidden');
+  tb.innerHTML=L.map(l=>{
+    const s=ST[l.stage],[ab,ac]=getAV(l.name);
+    const fu=l.followUp?(l.followUp<TODAY?`<span class="fu-ov"><i class="ti ti-alert-circle"></i> Overdue</span>`:l.followUp===TODAY?`<span class="fu-td"><i class="ti ti-clock"></i> Today</span>`:`<span class="fu-up">${fmtD(l.followUp)}</span>`):`<span class="fu-up">\u2014</span>`;
+    return `<tr class="lr" onclick="openDetail(${l.id})">
+      <td><div class="lnc"><div class="av" style="background:${ab};color:${ac}">${ini(l.name)}</div><div><div class="ln">${l.name}</div><div class="lp">${l.phone}</div></div></div></td>
+      <td>${l.company?`<span class="co-chip"><i class="ti ti-building"></i> ${l.company}</span>`:'<span style="color:var(--muted2)">\u2014</span>'}</td>
+      <td style="font-size:11.5px;color:var(--muted)">${l.pt}${l.pd?' \u00B7 '+l.pd:''}</td>
+      <td><span class="bv">${l.budget||'\u2014'}</span></td>
+      <td><span class="st">${l.source}</span></td>
+      <td><span class="sp ${s.cls}">${s.label}</span></td>
+      <td style="font-size:11.5px;color:var(--muted)">${l.agent}</td>
+      <td>${fu}</td>
+      <td><div class="ra">
+        <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();openEditById(${l.id})"><i class="ti ti-pencil"></i></button>
+        <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();confirmDelById(${l.id})"><i class="ti ti-trash"></i></button>
+      </div></td>
+    </tr>`;
+  }).join('');
+}
+
+// ══ DETAIL ══
+function openDetail(id){
+  const l=leads.find(x=>x.id===id); if(!l)return;
+  curId=id;
+  const [ab,ac]=getAV(l.name);
+  const av=document.getElementById('d-av');
+  av.style.background=ab; av.style.color=ac; av.textContent=ini(l.name);
+  document.getElementById('d-name').textContent=l.name;
+  document.getElementById('d-phone').textContent=l.phone;
+  document.getElementById('d-co').textContent=l.company||'\u2014';
+  document.getElementById('d-prop').textContent=(l.pt||'')+(l.pd?' \u00B7 '+l.pd:'');
+  document.getElementById('d-bud').textContent=l.budget||'\u2014';
+  document.getElementById('d-src').textContent=l.source;
+  document.getElementById('d-agt').textContent=l.agent;
+  document.getElementById('d-fu').textContent=l.followUp?fmtD(l.followUp):'Not set';
+  document.getElementById('d-pri').textContent=l.priority||'Medium';
+  document.getElementById('d-cnic').textContent=l.cnic||'Not provided';
+  document.getElementById('d-notes').textContent=l.notes||'No notes yet.';
+  document.getElementById('d-stage').value=l.stage;
+  document.getElementById('d-tl').innerHTML=(l.tl||[]).map(t=>`<div class="tl-item"><div class="tl-dot" style="background:${t.c}"></div><div><div class="tl-text">${t.txt}</div><div class="tl-time">${t.time}</div></div></div>`).join('');
+  document.getElementById('d-overlay').classList.add('open');
+  document.getElementById('d-panel').classList.add('open');
+}
+function closeDetail(){document.getElementById('d-overlay').classList.remove('open');document.getElementById('d-panel').classList.remove('open');curId=null;}
+function moveStage(s){
+  const l=leads.find(x=>x.id===curId); if(!l)return;
+  l.stage=s; l.tl=[{txt:`Moved to <strong>${ST[s].label}</strong>`,time:'Just now',c:ST[s].color},...(l.tl||[])];
+  toast('Stage \u2192 '+ST[s].label,'ti-check');
+  pushActivity(`<strong>${l.name}</strong> moved to ${ST[s].label}`,ST[s].color);
+  renderLeads(); renderKanban(); updateStats();
+  document.getElementById('d-tl').innerHTML=(l.tl||[]).map(t=>`<div class="tl-item"><div class="tl-dot" style="background:${t.c}"></div><div><div class="tl-text">${t.txt}</div><div class="tl-time">${t.time}</div></div></div>`).join('');
+}
+function logCall(){
+  const l=leads.find(x=>x.id===curId); if(!l)return;
+  const d=Math.floor(Math.random()*20+3);
+  l.tl=[{txt:`Call logged \u2014 <strong>${d} min call</strong>`,time:'Just now',c:'#FFB020'},...(l.tl||[])];
+  document.getElementById('d-tl').innerHTML=(l.tl||[]).map(t=>`<div class="tl-item"><div class="tl-dot" style="background:${t.c}"></div><div><div class="tl-text">${t.txt}</div><div class="tl-time">${t.time}</div></div></div>`).join('');
+  toast(`Call logged (${d} mins)`,'ti-phone');
+  pushActivity(`<strong>${l.name}</strong> \u2014 call logged (${d} mins)`,'#FFB020');
+}
+
+// ══ ADD/EDIT ══
+function openAdd(){editId=null;clearForm();document.getElementById('m-title').textContent='Add new lead';document.getElementById('m-save').textContent='Save lead';document.getElementById('m-lead').classList.add('open');}
+function closeModal(){document.getElementById('m-lead').classList.remove('open');editId=null;}
+function clearForm(){['f-name','f-phone','f-email','f-cnic','f-pd','f-bud','f-notes'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});['f-src','f-stage','f-co','f-pt','f-pri','f-agt'].forEach(id=>{const e=document.getElementById(id);if(e)e.selectedIndex=0;});document.getElementById('f-fu').value='';}
+function openEdit(){if(curId)openEditById(curId);}
+function openEditById(id){
+  const l=leads.find(x=>x.id===id); if(!l)return;
+  editId=id;
+  document.getElementById('f-name').value=l.name;
+  document.getElementById('f-phone').value=l.phone;
+  document.getElementById('f-email').value=l.email||'';
+  document.getElementById('f-cnic').value=l.cnic||'';
+  document.getElementById('f-src').value=l.source;
+  document.getElementById('f-stage').value=l.stage;
+  document.getElementById('f-co').value=l.company||'';
+  document.getElementById('f-pt').value=l.pt||'Plot';
+  document.getElementById('f-pd').value=l.pd||'';
+  document.getElementById('f-bud').value=l.budget||'';
+  document.getElementById('f-pri').value=l.priority||'Medium';
+  document.getElementById('f-agt').value=l.agent;
+  document.getElementById('f-fu').value=l.followUp||'';
+  document.getElementById('f-notes').value=l.notes||'';
+  document.getElementById('m-title').textContent='Edit lead';
+  document.getElementById('m-save').textContent='Save changes';
+  document.getElementById('m-lead').classList.add('open');
+}
+function saveLead(){
+  const name=document.getElementById('f-name').value.trim();
+  const phone=document.getElementById('f-phone').value.trim();
+  if(!name||!phone){toast('Name and phone are required','ti-alert-circle',true);return;}
+  const d={name,phone,email:document.getElementById('f-email').value.trim(),cnic:document.getElementById('f-cnic').value.trim(),source:document.getElementById('f-src').value,stage:document.getElementById('f-stage').value,company:document.getElementById('f-co').value,pt:document.getElementById('f-pt').value,pd:document.getElementById('f-pd').value.trim(),budget:document.getElementById('f-bud').value.trim(),priority:document.getElementById('f-pri').value,agent:document.getElementById('f-agt').value,followUp:document.getElementById('f-fu').value,notes:document.getElementById('f-notes').value.trim()};
+  if(editId){
+    const l=leads.find(x=>x.id===editId); Object.assign(l,d);
+    if(!l.tl)l.tl=[];
+    l.tl=[{txt:'Lead details <strong>updated</strong>',time:'Just now',c:'#FFB020'},...l.tl];
+    toast(name+' updated','ti-check');
+    pushActivity(`<strong>${name}</strong> details updated`,'#FFB020');
+    if(curId===editId){openDetail(editId);}
+  } else {
+    leads.unshift({...d,id:nextId++,tl:[{txt:`Lead created from <strong>${d.source}</strong>`,time:'Just now',c:'#4A90E2'}]});
+    toast(name+' added','ti-user-plus');
+    pushActivity(`<strong>${name}</strong> added as new lead`,'#4A90E2');
+  }
+  closeModal(); renderLeads(); renderKanban(); updateStats();
+}
+
+// ══ DELETE ══
+function confirmDel(){if(curId)confirmDelById(curId);}
+function confirmDelById(id){
+  const l=leads.find(x=>x.id===id); if(!l)return;
+  document.getElementById('c-msg').textContent=`"${l.name}" will be permanently removed.`;
+  cfmCb=()=>{leads=leads.filter(x=>x.id!==id);toast(l.name+' deleted','ti-trash');pushActivity(`Lead <strong>${l.name}</strong> deleted`,'#FF4D6A');if(curId===id)closeDetail();renderLeads();renderKanban();updateStats();};
+  document.getElementById('c-overlay').classList.add('open');
+}
+function closeConfirm(){document.getElementById('c-overlay').classList.remove('open');cfmCb=null;}
+function doDelete(){if(cfmCb)cfmCb();closeConfirm();}
+
+// ══ KANBAN ══
+function renderKanban(){
+  const B=document.getElementById('board');
+  const tot=leads.reduce((s,l)=>s+b2n(l.budget),0);
+  document.getElementById('p-val').textContent=`${leads.length} leads \u00B7 ${fmtB(tot)} total value`;
+  const ord=['new','contacted','visit','nego','token','booked','lost'];
+  B.innerHTML=ord.map(sk=>{
+    const s=ST[sk], cols=leads.filter(l=>l.stage===sk);
+    const cv=cols.reduce((a,l)=>a+b2n(l.budget),0);
+    return `<div class="p-col">
+      <div class="col-hd" style="background:${s.bg};color:${s.color}">${s.label} <span class="col-cnt">${cols.length}</span></div>
+      <div class="col-val">${cv?fmtB(cv):''}</div>
+      ${cols.map(l=>`<div class="p-card" onclick="openDetail(${l.id})">
+        <div class="p-bar" style="background:${s.color}"></div>
+        <div class="p-src">${l.source.split('.')[0].toUpperCase()}</div>
+        <div class="p-name">${l.name}</div>
+        <div class="p-prop">${l.pt}${l.pd?' \u00B7 '+l.pd:''}</div>
+        <div class="p-foot"><span class="p-bud">${l.budget||'\u2014'}</span><span class="p-agt">${l.agent}</span></div>
+      </div>`).join('')}
+      <button class="add-col-btn" onclick="openAdd()"><i class="ti ti-plus" style="font-size:13px"></i> Add lead</button>
+    </div>`;
+  }).join('');
+}
+
+// ══ COMPANIES ══
+function renderCo(q=''){
+  const grid=document.getElementById('co-grid');
+  const list=COS.filter(c=>!q||c.name.toLowerCase().includes(q.toLowerCase()));
+  grid.innerHTML=list.map(c=>{
+    const tot=leads.filter(l=>l.company===c.name).length;
+    const act=leads.filter(l=>l.company===c.name&&!['booked','lost'].includes(l.stage)).length;
+    const pv=leads.filter(l=>l.company===c.name&&l.stage!=='lost').reduce((s,l)=>s+b2n(l.budget),0);
+    const ini2=c.name.split(' ').map(w=>w[0]).slice(0,3).join('').toUpperCase();
+    return `<div class="co-card" onclick="toast('${c.name} \u2014 company detail in full product','ti-building')">
+      <div class="co-glow" style="background:${c.tc}"></div>
+      <div class="co-top"><div class="co-av" style="background:${c.bg};color:${c.tc}">${ini2}</div>
+        <div><div class="co-name">${c.name}</div><div class="co-type">${c.type}</div></div>
+      </div>
+      <div class="co-nums">
+        <div class="co-num"><div class="co-nv" style="color:${c.tc}">${tot}</div><div class="co-nl">Leads</div></div>
+        <div class="co-num"><div class="co-nv">${act}</div><div class="co-nl">Active</div></div>
+        <div class="co-num"><div class="co-nv">${pv?fmtB(pv).replace('\u20A8 ',''):'\u2014'}</div><div class="co-nl">Pipeline</div></div>
+      </div>
+      <div class="co-tags">${c.cities.map(t=>`<span class="co-tag">${t}</span>`).join('')}${c.pts.map(t=>`<span class="co-tag">${t}</span>`).join('')}</div>
+    </div>`;
+  }).join('');
+}
+
+// ══ FOLLOW-UPS ══
+function renderFU(){
+  const overdue=leads.filter(l=>l.followUp&&l.followUp<TODAY&&!['booked','lost'].includes(l.stage));
+  const todayFU=leads.filter(l=>l.followUp===TODAY);
+  const upcoming=leads.filter(l=>l.followUp&&l.followUp>TODAY);
+  document.getElementById('fu-sum').textContent=`${overdue.length} overdue \u00B7 ${todayFU.length} today \u00B7 ${upcoming.length} upcoming`;
+  const sbf=document.getElementById('sb-f');
+  const fc=overdue.length+todayFU.length; sbf.textContent=fc||''; sbf.style.display=fc?'':'none';
+  const card=(l,cls,tl,tc)=>`<div class="fu-card ${cls}" onclick="openDetail(${l.id})">
+    <span class="sp ${ST[l.stage].cls}">${ST[l.stage].label}</span>
+    <div class="fu-info"><div class="fu-nm">${l.name}</div><div class="fu-pr">${l.pt}${l.pd?' \u00B7 '+l.pd:''} \u00B7 ${l.agent}</div></div>
+    <div class="fu-time" style="color:${tc}">${tl}</div>
+  </div>`;
+  const sec=(title,items,cls,cnt,color,tc)=>items.length?`<div class="fu-sec">
+    <div class="fu-sec-title" style="color:${color}">${title} <span class="fu-cnt" style="background:${color}22;color:${color}">${cnt}</span></div>
+    ${items.map(l=>card(l,cls,cls==='ov'?fmtD(l.followUp):cls==='td'?'Today':fmtD(l.followUp),tc)).join('')}
+  </div>`:'';
+  document.getElementById('fu-body').innerHTML=
+    sec('Overdue',overdue,'ov',overdue.length,'var(--red)','var(--red)')+
+    sec('Today',todayFU,'td',todayFU.length,'var(--amber)','var(--amber)')+
+    sec('Upcoming',upcoming,'up',upcoming.length,'var(--blue)','var(--blue)')+
+    (!overdue.length&&!todayFU.length&&!upcoming.length?`<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:200px;color:var(--muted);gap:10px"><i class="ti ti-calendar-check" style="font-size:36px;opacity:.3"></i><p>No follow-ups scheduled</p></div>`:'');
+}
+
+// ══ DASHBOARD ══
+function updateStats(){
+  const tot=leads.length,vis=leads.filter(l=>l.stage==='visit').length;
+  const tok=leads.filter(l=>['token','booked'].includes(l.stage)).length;
+  const val=leads.reduce((s,l)=>s+b2n(l.budget),0);
+  const bkd=leads.filter(l=>l.stage==='booked').length;
+  const fu=leads.filter(l=>l.followUp&&l.followUp<=TODAY&&!['booked','lost'].includes(l.stage)).length;
+  document.getElementById('s-tot').textContent=tot;
+  document.getElementById('s-vis').textContent=vis;
+  document.getElementById('s-tok').textContent=tok;
+  document.getElementById('s-val').textContent=fmtB(val);
+  document.getElementById('s-conv').textContent=tot?((bkd/tot)*100).toFixed(1)+'%':'0%';
+  document.getElementById('s-avg').textContent=fmtB(tot?val/tot:0);
+  document.getElementById('s-fu').textContent=fu;
+  document.getElementById('sb-l').textContent=tot;
+  const sbf=document.getElementById('sb-f'); sbf.textContent=fu||''; sbf.style.display=fu?'':'none';
+}
+function pushActivity(txt,c){activity.unshift({txt,time:'Just now',c});if(activity.length>8)activity.pop();}
+function renderDash(){
+  updateStats();
+  const ord=['new','contacted','visit','nego','token','booked'];
+  const mx=Math.max(...ord.map(sk=>leads.filter(l=>l.stage===sk).length),1);
+  document.getElementById('d-bars').innerHTML=ord.map(sk=>{
+    const s=ST[sk],cnt=leads.filter(l=>l.stage===sk).length;
+    const h=Math.max((cnt/mx)*85,4);
+    return `<div class="pb-wrap" style="position:relative;flex:1;display:flex;align-items:flex-end"><div class="pb-bar" style="width:100%;background:${s.color};height:${h}%"><span class="pb-val">${cnt}</span><span class="pb-lbl">${s.label.split(' ')[0]}</span></div></div>`;
+  }).join('');
+  document.getElementById('act-feed').innerHTML=activity.slice(0,5).map(a=>`<div class="act-item"><div class="act-dot" style="background:${a.c}"></div><div><div class="act-text">${a.txt}</div><div class="act-time">${a.time}</div></div></div>`).join('');
+}
+
+// ══ REPORTS ══
+function renderReports(){
+  const src={};leads.forEach(l=>{src[l.source]=(src[l.source]||0)+1;});
+  const sc=['#00C9A7','#9B72F8','#4A90E2','#FFB020','#06D6A0','#FF4D6A'];
+  const sm=Math.max(...Object.values(src),1);
+  document.getElementById('r-src').innerHTML=Object.entries(src).sort((a,b)=>b[1]-a[1]).map(([s,n],i)=>`<div class="bc-row"><div class="bc-lbl">${s}</div><div class="bc-wrap"><div class="bc-bar" style="width:${(n/sm)*100}%;background:${sc[i%sc.length]}"><span class="bc-bv">${n}</span></div></div></div>`).join('');
+  const ord=['new','contacted','visit','nego','token','booked'];
+  const fm=Math.max(...ord.map(sk=>leads.filter(l=>l.stage===sk).length),1);
+  document.getElementById('r-funnel').innerHTML=ord.map(sk=>{const s=ST[sk],n=leads.filter(l=>l.stage===sk).length;return `<div class="bc-row"><div class="bc-lbl">${s.label}</div><div class="bc-wrap"><div class="bc-bar" style="width:${(n/fm)*100}%;background:${s.color}"><span class="bc-bv">${n}</span></div></div></div>`;}).join('');
+  const agts=['Sara M.','Ali Z.','Omar S.','Hina K.'];
+  document.getElementById('r-agents').innerHTML=agts.map(ag=>{
+    const al=leads.filter(l=>l.agent===ag);
+    const v=al.filter(l=>['visit','nego','token','booked'].includes(l.stage)).length;
+    const bk=al.filter(l=>l.stage==='booked').length;
+    const pv=al.reduce((s,l)=>s+b2n(l.budget),0);
+    const cv=al.length?((bk/al.length)*100).toFixed(0):0;
+    const p=al.length?Math.round((bk/al.length)*100):0;
+    return `<tr><td style="font-weight:500;color:var(--white2)">${ag}</td><td>${al.length}</td><td>${v}</td><td style="color:var(--green);font-weight:600">${bk}</td><td>${cv}%</td><td style="color:var(--teal);font-family:'Space Grotesk',sans-serif;font-weight:600">${pv?fmtB(pv):'\u2014'}</td><td><div class="pbar" style="width:${Math.max(p*2,4)}px"></div></td></tr>`;
+  }).join('');
+}
+
+// ══ TOAST ══
+function toast(msg,icon='ti-check',err=false){
+  const w=document.getElementById('toast-wrap');
+  const t=document.createElement('div');
+  t.className='toast'+(err?' err':'');
+  t.innerHTML=`<i class="ti ${icon}" style="color:${err?'var(--red)':'var(--teal)'}"></i> ${msg}`;
+  w.appendChild(t);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>t.classList.add('show')));
+  setTimeout(()=>{t.classList.remove('show');setTimeout(()=>t.remove(),350);},3200);
+}
+
+// ══ INIT ══
+document.addEventListener('DOMContentLoaded',()=>{renderLeads();updateStats();});
+</script>
+</body>
+</html>
